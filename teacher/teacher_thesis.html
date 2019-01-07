@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> teacher thesis</title>
+ <meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./file/bootstrap.min.css" rel="stylesheet" media="screen">
+ <script src="./file/jquery.js"></script>
+    <script src="./file/bootstrap.min.js"></script>
+
+    <style >
+      body{
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+      }
+      .form-signin{
+        max-width: 40px;
+        padding:19px 29px 29px;
+        margin:0 auto 20px;
+        background-color: #fff;
+        border:1px solid #e5e5e5;
+        -webkit-border-radius:5px;
+          -moz-border-radius:5px;
+            border-radius:5px;
+        -webkit-box-shadow:0 1px 2px rgba(0,0,0,.05);
+          -moz-box-shadow:0 1px 2px rgba(0,0,0,.05);
+            box-shadow:0 1px 2px rgba(0,0,0,.05);
+      }
+    </style>
+<script type="text/javascript">
+ function checkthesisid(){
+
+    if(form1.thesisid.value==""){
+        alert("enter thesisid ");form1.v.focus();form1.thesisid.select();return;
+      }
+      str=form1.thesisid.value;
+      var expression= /^([0-9]){1,5}$/;
+      var objExp=new RegExp(expression);
+      if(objExp.test(str)==false){
+        alert("题目号为1-5个数字!");form1.thesisid.focus();form1.thesisid.select();return;
+      }
+    }
+ function checkthesisname(){
+
+    if(form1.thesisname.value==""){
+        alert("enter thesisname ");form1.thesisname.focus();form1.thesisname.select();return;
+      }
+      str=form1.thesisname.value;
+      var expression= /^([a-zA-Z0-9_]){1,10}$/;
+      var objExp=new RegExp(expression);
+      if(objExp.test(str)==false){
+        alert("题目名为1-10个字符!");form1.thesisname.focus();form1.thesisname.select();return;
+      }
+    }
+
+
+function checkthesistime(){
+
+    if(form1.thesistime.value==""){
+        alert("chose thesistime ");form1.thesistime.focus();form1.thesistime.select();return;
+      }
+    }
+
+  function checkthesistask(){
+
+    if(form1.thesistask.value==""){
+        alert("enter thesistask ");form1.thesistask.focus();form1.thesistask.select();return false;
+      }
+    }
+
+  function checkeform()
+  {
+    checkthesisid();
+    checkthesisname();
+    checkthesistask();
+    form1.submit();
+
+  }
+
+</script>
+ </head>
+
+ <body >
+	 <div class="panel panel-default" style="margin-top:100px">
+		 <div class="panel-body">
+    <div calss="container">
+     <form name="form1" class="form-horizontal" method="post" action="insert.php">
+      <div class="control-group">
+       <label for="thesisid" class="control-label">课题号: </label>
+       <div class="controls">
+          <input type="text" name="thesisid" id="thesisid" onchange="return checkthesisid();" >
+       </div>
+      </div>
+
+      <div class="control-group">
+      <label for="thesisname" class="control-label"> 课题名:</label>
+      <div class="controls">
+      <input type="text" name="thesisname" id="thesisname"  onchange="return checkthesisname();">
+
+      </div>
+      </div>
+      
+      <div class="control-group">
+      <label for="thesistype" class="control-label">
+       类型:</label>
+       <div class="controls">
+       <select name="type" id="type">
+       <option value="practical" >practical</option>
+       <option value="science">science</option>
+       </select>
+      </div>
+      </div>
+
+     <div class="control-group">
+     <label for="thesistype" class="control-label">
+       说明: 
+      </label>
+       <div class="controls">
+       <textarea  type="text" value="" name="thesistask" id="thesistask"  onchange="return checkthesistask();"  rows="5" ></textarea>
+       </div>
+      </div>
+
+
+      <div class="control-group">
+      <div class="controls">
+       <input  type="submit" value="确定" onclick="submit">
+       <input type="reset" value="重置" >
+       </div>
+    </div>
+
+</form>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=GB2312" />
+ <meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+<title>home</title>
+<script type="text/javascript">
+var $$ = function (id) {
+    return "string" == typeof id ? document.getElementById(id) : id;
+};
+
+function Event(e){
+	var oEvent = document.all ? window.event : e;
+	if (document.all) {
+		if(oEvent.type == "mouseout") {
+			oEvent.relatedTarget = oEvent.toElement;
+		}else if(oEvent.type == "mouseover") {
+			oEvent.relatedTarget = oEvent.fromElement;
+		}
+	}
+	return oEvent;
+}
+
+function addEventHandler(oTarget, sEventType, fnHandler) {
+	if (oTarget.addEventListener) {
+		oTarget.addEventListener(sEventType, fnHandler, false);
+	} else if (oTarget.attachEvent) {
+		oTarget.attachEvent("on" + sEventType, fnHandler);
+	} else {
+		oTarget["on" + sEventType] = fnHandler;
+	}
+};
+
+var Class = {
+  create: function() {
+    return function() {
+      this.initialize.apply(this, arguments);
+    }
+  }
+}
+
+Object.extend = function(destination, source) {
+    for (var property in source) {
+        destination[property] = source[property];
+    }
+    return destination;
+}
+
+
+var GlideView = Class.create();
+GlideView.prototype = {
+  initialize: function(obj, iWidth, sTag, iMaxWidth, options) {
+    var oContainer = $$(obj), oThis=this, len = 0;
+	
+	this.SetOptions(options);
+	
+	this.Step = Math.abs(this.options.Step);
+	this.Time = Math.abs(this.options.Time);
+	this.Showtext = false;
+	
+	this._list = oContainer.getElementsByTagName(sTag);
+	len = this._list.length;
+	this._count = len;
+	this._width = parseInt(iWidth / len);
+	this._width_max = parseInt(iMaxWidth);
+	this._width_min = parseInt((iWidth - this._width_max) / (len - 1));
+	this._timer = null;
+	
+	
+	if(this.options.TextTag && this.options.TextHeight > 0){
+		this.Showtext = true;
+		this._text = oContainer.getElementsByTagName(this.options.TextTag);
+		this._height_text = -parseInt(this.options.TextHeight);
+	}
+	
+	this.Each(function(oList, oText, i){
+		oList._target = this._width * i;
+		oList.style.left = oList._target + "px";
+		oList.style.position = "absolute";
+		addEventHandler(oList, "mouseover", function(){ oThis.Set.call(oThis, i); });
+		
+		
+		if(oText){
+			oText._target = this._height_text;
+			oText.style.bottom = oText._target + "px";
+			oText.style.position = "absolute";
+		}
+	})
+	
+	
+	oContainer.style.width = iWidth + "px";
+	oContainer.style.overflow = "hidden";
+	oContainer.style.position = "relative";
+	
+	addEventHandler(oContainer, "mouseout", function(e){
+		
+		var o = Event(e).relatedTarget;
+		if (oContainer.contains ? !oContainer.contains(o) : oContainer != o && !(oContainer.compareDocumentPosition(o) & 16)) oThis.Set.call(oThis, -1);
+	})
+  },
+ 
+  SetOptions: function(options) {
+    this.options = {
+		Step:			20,
+		Time:			20,
+		TextTag:		"",
+		TextHeight:		0
+    };
+    Object.extend(this.options, options || {});
+  },
+  
+  Set: function(index) {
+	if (index < 0) {
+		
+		this.Each(function(oList, oText, i){ oList._target = this._width * i; if(oText){ oText._target = this._height_text; } })
+	} else {
+		
+		this.Each(function(oList, oText, i){
+			oList._target = (i <= index) ? this._width_min * i : this._width_min * (i - 1) + this._width_max;
+			if(oText){ oText._target = (i == index) ? 0 : this._height_text; }
+		})
+	}
+	this.Move();
+  },
+ 
+  Move: function() {
+	clearTimeout(this._timer);
+	var bFinish = true;
+	this.Each(function(oList, oText, i){
+		var iNow = parseInt(oList.style.left), iStep = this.GetStep(oList._target, iNow);
+		if (iStep != 0) { bFinish = false; oList.style.left = (iNow + iStep) + "px"; }
+		
+		if (oText) {
+			iNow = parseInt(oText.style.bottom), iStep = this.GetStep(oText._target, iNow);
+			if (iStep != 0) { bFinish = false; oText.style.bottom = (iNow + iStep) + "px"; }
+		}
+	})
+	
+	if (!bFinish) { var oThis = this; this._timer = setTimeout(function(){ oThis.Move(); }, this.Time); }
+  },
+ 
+  GetStep: function(iTarget, iNow) {
+	var iStep = (iTarget - iNow) / this.Step;
+	if (iStep == 0) return 0;
+	if (Math.abs(iStep) < 1) return (iStep > 0 ? 1 : -1);
+	return iStep;
+  },
+  Each:function(fun) {
+	for (var i = 0; i < this._count; i++)
+		fun.call(this, this._list[i], (this.Showtext ? this._text[i] : null), i);
+  }
+};
+
+</script>
+<style type="text/css">
+#idGlideView {
+	height:300px;
+	margin:100px ;
+}
+#idGlideView div {
+	width:500px;
+	height:800px;
+}
+#idGlideView div a {
+	width:500px;
+	height:500px;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+	background:#000;
+	color:#fff;
+	text-decoration:none;
+}
+</style>
+</head>
+<body>
+<!--<div>
+ <marquee direction="left" behavior="scroll" scrollamount="10" align="center" margin="0"  width="1000">
+ 	<font size="6" face="verdana">
+     this is bjfu! welcome to teacher page of thesis! 
+     </font>
+    </marquee>
+
+</div>
+-->
+<div id="idGlideView">
+	<div > <img src="./image/1.jpg"></div>
+	<div > <img src="./image/2.jpg"></div>
+	<div > <img src="./image/3.jpg"></div>
+	<div > <img src="./image/4.jpg"></div>
+	<div > <img src="./image/5.jpg"></div>
+	<div > <img src="./image/6.jpg"></div>
+	<div > <img src="./image/7.jpg"></div>
+	<div > <img src="./image/8.jpg"></div>
+	
+</div>
+<div>
+	 <marquee direction="left" behavior="scroll" scrollamount="10" align="center" margin="50"  width="1000" height="35">
+	         <font size="6" face="verdana">This is teacher's home page!Welcome!
+			           </font>
+				       </marquee>
+
+			       </div>
+
+
+
+
+
+
+
+<SCRIPT>
+
+var gv = new GlideView("idGlideView", 1000, "div", 500, { TextTag: "a", TextHeight: 50 });
+var oSel = $$("sel");
+for (var i = 0; i <= gv._count; i++) {
+	var op = document.createElement("OPTION");
+	op.value = i; op.innerHTML = "Õ¹¿ªµÚ" + (i + 1) + "¸ö";
+	oSel.appendChild(op);
+}
+oSel.onchange = function(){ gv.Set(oSel.value); }
+
+
+</SCRIPT>
+</body>
+</html>
