@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>login</title>
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/style-responsive.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" charset="gb2312">
+	<link rel="stylesheet" href="css/bootstrap.min.css">  
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-responsive.css">
+
+	<style type="text/css">
+		.icon-align-right{
+			padding-right: 20px;
+		}
+        .login{
+            max-width: 400px;
+            padding-top: 100px;
+            -webkit-opacity:0.7;
+            -moz-opacity:0.7;
+            opacity: 0.7; 
+            margin-left: 320px;
+        }
+        .form-signin{
+            max-width: 400px;
+            padding: 30px 29px 80px;
+            background-color: #1c2a37;
+            -webkit-border-radius:5px;
+            -moz-border-radius:5px;
+            border-radius: 5px;
+            -webkit-box-shadow:0 1px 2px rgba(0,0,0,.05);
+            -moz-box-shadow:0 1px 2px rgba(0,0,0,.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        }
+        .form-signin.form-signin-heading,.form-signin.checkbox{
+            margin-bottom: 10px;
+            margin-left: 30px;
+        }
+        .form-signin input[type="text"].form-signin input[type="password"]{
+            font-size: 16px;
+            height:auto;
+            background-color: black;
+            margin-bottom: 15px;
+            padding: 10px 9px;
+        }
+        .yanzheng{
+            font-size: 24px;
+            font-style: bold;
+            color:#db6f6a;
+        }
+	</style>
+  </head>
+  <body onload="getYanzhcode()">
+	  <div id="login-page">
+	  	<div class="container">
+	  	 <div class=" login">
+                <form class="form-signin" name="myform" id="myform" method="post" action="checkuser.php">
+                    <h2 class="form-signin-heading" style="color: #68dff0;">毕业设计选题系统</h2>
+                    <div style="background-color: white;" class="form-control">
+                    <label><input type="radio" id="identi1" name="identi" value="1">teacher </label>
+                    <label><input type="radio" id="identi2" name="identi" value="2">student</label>
+                    <label><input type="radio" id="identi3" name="identi" value="3">admin</label>
+                	</div><br>
+                    <input type="text" name="txt_user" id="txt_user" class="form-control" placeholder="user">
+                    <input type="password" name="txt_pwd" id="txt_pwd" class="form-control" placeholder="password">
+                    <div class="input-append">
+                        <input type="text" name="txt_yan" id="txt_yan" class="form-control"  placeholder="严格遵守大小写!点击可刷新" style="width: 223px;">
+                        <span class="yanzheng add-on output" id="txt_yyan"  onclick="getYanzhcode()"></span>
+                    </div>
+                    <br><br>
+                    <button class="btn btn-large btn-info" type="submit" onclick="return check(myform);">Go start!</button>
+                </form>
+            </div>
+	  	</div>
+	  </div>
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery.backstretch.min.js"></script>
+    <script>
+        $.backstretch("assets/img/login-bg.jpg", {speed: 500});
+    </script>
+
+
+  </body>
+</html>
+<script type="text/javascript">
+function check(myform){
+    if(myform.txt_user.value==""){
+        alert("输入用户名！");myform.txt_user.focus();return false;
+    }
+    if(!checkusername(myform.txt_user.value)){
+        alert("输入用户名不合法");myform.txt_user.focus();return false;
+    }
+    if(myform.txt_pwd.value==""){
+        alert("输入密码！");myform.txt_pwd.focus();return false;
+    }
+    if(!checkPWD(myform.txt_pwd.value)){
+        alert("输入的密码不合法");myform.txt_pwd.focus();return false;
+    }
+ /*   if(myform.txt_yan.value==""){
+        alert("输入验证码！");myform.txt_yan.focus();return false;
+    }*/
+    if(document.getElementById('txt_yan').value!=document.getElementById('txt_yyan').value){
+        alert("验证码错误，重新输入");myform.txt_yan.focus();return false;
+    }
+    myform.submit();
+}
+function checkusername(username){
+    var str=username;
+    var Expression=/^[\u4e00-\u9fa5_a-zA-Z0-9]+$/;
+    var objExp=new RegExp(Expression);
+    if(objExp.test(str)==true){
+        return true;}
+    else {
+        return false;
+    }
+}
+function checkPWD(username){
+    var str=username;
+    var Expression=/^\w+$/;
+    var objExp=new RegExp(Expression);
+    if(objExp.test(str)==true){
+        return true;}
+    else 
+        {return false;
+    }
+}
+function getXMLHTTPRequest(){
+    try{
+        req=new XMLHttpRequest();
+    }catch(err1){
+        try{
+            req=new ActiveXObject("Msxml2.XMLHTTP");
+        }catch(err2){
+            try{
+                req=new ActiveXObject("Microsoft.XMLHTTP");
+            }catch(err3){
+                req=false;
+            }
+        }
+    }
+    return req;
+}
+
+var http=getXMLHTTPRequest();
+
+function getYanzhcode(){    
+    var myurl='tellyanXML.php';
+    http.open("GET",myurl,true);
+    http.onreadystatechange=usehttpresponse;
+    http.send(null);
+}
+
+function usehttpresponse(){
+    if(http.readyState==4){
+        if(http.status==200){
+            var yanvalue=http.responseXML.getElementsByTagName("yan")[0];
+            document.getElementById("txt_yyan").innerHTML=yanvalue.childNodes[0].nodeValue;
+            document.getElementById("txt_yyan").value=yanvalue.childNodes[0].nodeValue;
+    
+            }
+    }else{
+        //document.getElementById("txt_yyan").innerHTML="0000";
+    }
+}
+</script>
